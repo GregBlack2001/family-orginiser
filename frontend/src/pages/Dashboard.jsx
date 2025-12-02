@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddEventModal from "../components/AddEvent.jsx";
+import EditEventModal from "../components/EditEventModal.jsx";
 import "./styles/Dashboard.css";
 
 function Dashboard() {
@@ -11,7 +12,9 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [family, setFamily] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +66,11 @@ function Dashboard() {
     }
   };
 
+  const handleEdit = (event) => {
+    setSelectedEvent(event);
+    setIsEditModalOpen(true);
+  };
+
   const handleDelete = async (eventId) => {
     if (!window.confirm("Are you sure you want to delete this event?")) {
       return;
@@ -111,7 +119,10 @@ function Dashboard() {
       </div>
 
       <div className="actions-bar">
-        <button className="add-event-btn" onClick={() => setIsModalOpen(true)}>
+        <button
+          className="add-event-btn"
+          onClick={() => setIsAddModalOpen(true)}
+        >
           + Add New Event
         </button>
         <div className="search-filter">
@@ -156,7 +167,12 @@ function Dashboard() {
               </div>
               {event.organiser === username && (
                 <div className="event-actions">
-                  <button className="edit-btn">Edit</button>
+                  <button
+                    className="edit-btn"
+                    onClick={() => handleEdit(event)}
+                  >
+                    Edit
+                  </button>
                   <button
                     className="delete-btn"
                     onClick={() => handleDelete(event._id)}
@@ -171,9 +187,19 @@ function Dashboard() {
       )}
 
       <AddEventModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
         onEventAdded={fetchEvents}
+      />
+
+      <EditEventModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedEvent(null);
+        }}
+        onEventUpdated={fetchEvents}
+        event={selectedEvent}
       />
     </div>
   );
