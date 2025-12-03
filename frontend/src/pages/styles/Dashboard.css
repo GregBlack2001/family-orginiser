@@ -212,6 +212,7 @@
   position: relative;
   overflow: hidden;
   border-left: 4px solid var(--color-primary);
+  cursor: pointer;
 }
 
 .event-card::before {
@@ -238,6 +239,29 @@
 
 .event-card:hover::before {
   opacity: 1;
+}
+
+/* Click hint on hover */
+.event-card::after {
+  content: "🗺️ View Map";
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background-color: var(--color-primary);
+  color: white;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all var(--transition-base);
+  pointer-events: none;
+}
+
+.event-card:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .event-card h3 {

@@ -4,6 +4,7 @@ import axios from "axios";
 import AddEventModal from "../components/AddEvent.jsx";
 import EditEventModal from "../components/EditEventModal.jsx";
 import CalendarModal from "../components/CalendarModal.jsx";
+import MapModal from "../components/MapModal.jsx";
 import "./styles/Dashboard.css";
 
 function Dashboard() {
@@ -16,7 +17,9 @@ function Dashboard() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [mapEvent, setMapEvent] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +88,18 @@ function Dashboard() {
   const handleEdit = (event) => {
     setSelectedEvent(event);
     setIsEditModalOpen(true);
+  };
+
+  const handleEventClick = (event) => {
+    setMapEvent({
+      name: event.event,
+      location: event.location,
+      date: event.date,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      requiredItems: event.requiredItems,
+    });
+    setIsMapModalOpen(true);
   };
 
   const handleDelete = async (eventId) => {
@@ -181,7 +196,11 @@ function Dashboard() {
       ) : (
         <div className="events-grid">
           {filteredEvents.map((event) => (
-            <div className="event-card" key={event._id}>
+            <div
+              className="event-card"
+              key={event._id}
+              onClick={() => handleEventClick(event)}
+            >
               <h3>{event.event}</h3>
               <div className="event-detail">
                 <span className="icon">📅</span>
@@ -202,7 +221,10 @@ function Dashboard() {
                 <span>{event.requiredItems}</span>
               </div>
               {event.organiser === username && (
-                <div className="event-actions">
+                <div
+                  className="event-actions"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     className="edit-btn"
                     onClick={() => handleEdit(event)}
@@ -242,6 +264,15 @@ function Dashboard() {
         isOpen={isCalendarModalOpen}
         onClose={() => setIsCalendarModalOpen(false)}
         events={events}
+      />
+
+      <MapModal
+        isOpen={isMapModalOpen}
+        onClose={() => {
+          setIsMapModalOpen(false);
+          setMapEvent(null);
+        }}
+        event={mapEvent}
       />
     </div>
   );
