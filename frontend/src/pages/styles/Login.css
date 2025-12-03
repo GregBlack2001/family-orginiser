@@ -1,16 +1,17 @@
 .login-container {
   max-width: 400px;
-  margin: 50px auto;
-  padding: 30px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 32px);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
 
 .login-container h2 {
   text-align: center;
   margin-bottom: 25px;
-  color: #333;
+  color: var(--color-heading);
 }
 
 .login-container form > div {
@@ -29,39 +30,39 @@
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   box-sizing: border-box;
 }
 
 .login-container input:focus {
   outline: none;
-  border-color: #4a90a4;
+  border-color: var(--color-primary);
 }
 
 /* Submit Button */
 .login-container button[type="submit"] {
   width: 100%;
   padding: 12px;
-  background-color: #4a90a4;
+  background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-md);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .login-container button[type="submit"]:hover {
-  background-color: #3a7a8a;
+  background-color: var(--color-primary-dark);
 }
 
 /* Message */
 .message {
   text-align: center;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: var(--radius-md);
   margin-top: 15px;
   background-color: #d4edda;
   color: #155724;
@@ -76,15 +77,25 @@
 .login-container > p {
   text-align: center;
   margin-top: 20px;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .login-container a {
-  color: #4a90a4;
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 600;
 }
 
 .login-container a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 540px) {
+  .login-container {
+    padding: 22px;
+  }
+
+  .login-container h2 {
+    font-size: 1.4rem;
+  }
 }
