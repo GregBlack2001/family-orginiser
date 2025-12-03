@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddEventModal from "../components/AddEvent.jsx";
 import EditEventModal from "../components/EditEventModal.jsx";
+import CalendarModal from "../components/CalendarModal.jsx";
 import "./styles/Dashboard.css";
 
 function Dashboard() {
@@ -14,6 +15,7 @@ function Dashboard() {
   const [family, setFamily] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const navigate = useNavigate();
 
@@ -145,12 +147,20 @@ function Dashboard() {
       </div>
 
       <div className="actions-bar">
-        <button
-          className="add-event-btn"
-          onClick={() => setIsAddModalOpen(true)}
-        >
-          + Add New Event
-        </button>
+        <div className="actions-left">
+          <button
+            className="add-event-btn"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            + Add New Event
+          </button>
+          <button
+            className="calendar-btn"
+            onClick={() => setIsCalendarModalOpen(true)}
+          >
+            📅 Calendar
+          </button>
+        </div>
         <div className="search-filter">
           <input
             type="text"
@@ -226,6 +236,12 @@ function Dashboard() {
         }}
         onEventUpdated={fetchEvents}
         event={selectedEvent}
+      />
+
+      <CalendarModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        events={events}
       />
     </div>
   );
