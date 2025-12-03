@@ -30,6 +30,19 @@ function Dashboard() {
     fetchEvents();
   }, [navigate]);
 
+  // Sort events by date (earliest first), then by start time
+  const sortEventsByDate = (eventsToSort) => {
+    return [...eventsToSort].sort((a, b) => {
+      // First compare by date
+      const dateComparison = a.date.localeCompare(b.date);
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+      // If same date, compare by start time
+      return a.startTime.localeCompare(b.startTime);
+    });
+  };
+
   const fetchEvents = async () => {
     try {
       const familyId = localStorage.getItem("userfamily");
@@ -40,8 +53,9 @@ function Dashboard() {
         }
       );
 
-      setEvents(response.data);
-      setFilteredEvents(response.data);
+      const sortedEvents = sortEventsByDate(response.data);
+      setEvents(sortedEvents);
+      setFilteredEvents(sortedEvents);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -86,7 +100,8 @@ function Dashboard() {
       );
 
       if (response.data["event deleted"]) {
-        setEvents(events.filter((event) => event._id !== eventId));
+        const updatedEvents = events.filter((event) => event._id !== eventId);
+        setEvents(updatedEvents);
         setFilteredEvents(
           filteredEvents.filter((event) => event._id !== eventId)
         );
@@ -103,6 +118,17 @@ function Dashboard() {
     localStorage.removeItem("userrole");
     localStorage.removeItem("userfamily");
     navigate("/login");
+  };
+
+  // Helper function to format date nicely
+  const formatDate = (dateString) => {
+    const options = {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
   return (
@@ -149,7 +175,7 @@ function Dashboard() {
               <h3>{event.event}</h3>
               <div className="event-detail">
                 <span className="icon">📅</span>
-                <span>{event.date}</span>
+                <span>{formatDate(event.date)}</span>
               </div>
               <div className="event-detail">
                 <span className="icon">🕐</span>
