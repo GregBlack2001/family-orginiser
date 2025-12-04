@@ -95,24 +95,56 @@ function Register() {
     }
 
     try {
-      const response = await axios.post("http://localhost:3002/register", {
-        username: formData.username,
-        password: formData.password,
-        familyId: formData.familyId,
-      });
+      // Step 1: Register the user
+      const registerResponse = await axios.post(
+        "http://localhost:3002/register",
+        {
+          username: formData.username,
+          password: formData.password,
+          familyId: formData.familyId,
+        }
+      );
 
-      if (response.data.success) {
+      if (registerResponse.data.success) {
         const familyMsg = isNewFamily
           ? `Your Family ID is: ${formData.familyId} - Share this with family members!`
           : "";
 
-        setMessage(
-          `Registration successful! ${familyMsg} Redirecting to login...`
-        );
+        setMessage(`Registration successful! ${familyMsg} Logging you in...`);
 
-        setTimeout(() => {
-          navigate("/login");
-        }, 4000);
+        // Step 2: Automatically log in the user
+        try {
+          const loginResponse = await axios.post(
+            "http://localhost:3002/login",
+            {
+              username: formData.username,
+              password: formData.password,
+              familyId: formData.familyId,
+            }
+          );
+
+          if (loginResponse.data.success) {
+            // Store auth data
+            localStorage.setItem("token", loginResponse.data.token);
+            localStorage.setItem("username", loginResponse.data.username);
+            localStorage.setItem("userrole", loginResponse.data.userrole);
+            localStorage.setItem("userfamily", loginResponse.data.userfamily);
+
+            // Redirect to dashboard after a brief delay to show the success message
+            setTimeout(() => {
+              navigate("/dashboard");
+            }, 2000);
+          }
+        } catch (loginError) {
+          // If auto-login fails, redirect to login page
+          console.error("Auto-login failed:", loginError);
+          setMessage(
+            `Registration successful! ${familyMsg} Please log in manually.`
+          );
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
+        }
       }
     } catch (error) {
       setIsError(true);
