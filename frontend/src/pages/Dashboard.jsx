@@ -35,6 +35,35 @@ function Dashboard() {
     fetchEvents();
   }, [navigate]);
 
+  // Filter out past events (events that have already ended)
+  const filterPastEvents = (eventsToFilter) => {
+    const now = new Date();
+    const today = now.toISOString().split("T")[0];
+    const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+    return eventsToFilter.filter((event) => {
+      // If event date is in the future, keep it
+      if (event.date > today) {
+        return true;
+      }
+      // If event date is today, check if end time has passed
+      if (event.date === today) {
+        // If event has an end time, check if it's passed
+        if (event.endTime) {
+          return event.endTime > currentTime;
+        }
+        // If no end time but has start time, keep if start time hasn't passed
+        if (event.startTime) {
+          return event.startTime > currentTime;
+        }
+        // If no times at all, keep it for today
+        return true;
+      }
+      // Event date is in the past, filter it out
+      return false;
+    });
+  };
+
   // Sort events by date (earliest first), then by start time
   const sortEventsByDate = (eventsToSort) => {
     return [...eventsToSort].sort((a, b) => {
@@ -58,7 +87,9 @@ function Dashboard() {
         }
       );
 
-      const sortedEvents = sortEventsByDate(response.data);
+      // Filter out past events, then sort
+      const upcomingEvents = filterPastEvents(response.data);
+      const sortedEvents = sortEventsByDate(upcomingEvents);
       setEvents(sortedEvents);
       setFilteredEvents(sortedEvents);
       setLoading(false);
@@ -191,7 +222,7 @@ function Dashboard() {
       ) : filteredEvents.length === 0 ? (
         <div className="no-events">
           <div className="icon">📅</div>
-          <p>No events found. Create your first family event!</p>
+          <p>No upcoming events found. Create your first family event!</p>
         </div>
       ) : (
         <div className="events-grid">

@@ -14,6 +14,12 @@ function AddEventModal({ isOpen, onClose, onEventAdded }) {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
+  // Get today's date in YYYY-MM-DD format for min attribute
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -25,6 +31,19 @@ function AddEventModal({ isOpen, onClose, onEventAdded }) {
     e.preventDefault();
     setMessage("");
     setIsError(false);
+
+    // Validate that date is not in the past
+    const selectedDate = new Date(formData.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setIsError(true);
+      setMessage(
+        "Cannot create events in the past. Please select today or a future date."
+      );
+      return;
+    }
 
     try {
       const eventData = {
@@ -100,6 +119,7 @@ function AddEventModal({ isOpen, onClose, onEventAdded }) {
               name="date"
               value={formData.date}
               onChange={handleChange}
+              min={getTodayDate()}
               required
             />
           </div>
